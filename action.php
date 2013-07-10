@@ -31,7 +31,7 @@ if (!defined('DOKU_PLUGIN'))
 }
 require_once(DOKU_PLUGIN . 'action.php');
 
-class action_plugin_favoris extends DokuWiki_Action_Plugin
+class action_plugin_favorites extends DokuWiki_Action_Plugin
 {
 
     /**
@@ -42,15 +42,15 @@ class action_plugin_favoris extends DokuWiki_Action_Plugin
         return array(
             'author' => 'Etienne M.',
             'email' => 'emauvaisfr@yahoo.fr',
-            'date' => @file_get_contents(DOKU_PLUGIN . 'favoris/VERSION'),
-            'name' => 'favoris Plugin',
+            'date' => @file_get_contents(DOKU_PLUGIN . 'favorites/VERSION'),
+            'name' => 'favorites Plugin',
         );
     }
 
     /**
      * Constructor
      */
-    function action_plugin_favoris()
+    function action_plugin_favorites()
     {
         $this->setupLocale();
     }
@@ -68,7 +68,7 @@ class action_plugin_favoris extends DokuWiki_Action_Plugin
     {
         global $INFO;
 
-        if ($event->data == 'snapfavoris')
+        if ($event->data == 'snapfavorites')
         {
             $event->preventDefault();
         }
@@ -79,19 +79,19 @@ class action_plugin_favoris extends DokuWiki_Action_Plugin
             return;
         }
 
-        if (isset($_COOKIE['favoris']))
+        if (isset($_COOKIE['favorites']))
         {
-            $fav = $_COOKIE['favoris'];
+            $fav = $_COOKIE['favorites'];
 
-            //Si on ne souhaite pas suivre les favoris
+            //Si on ne souhaite pas suivre les favorites
             if ($fav['off'] == 1)
             {
                 //On efface les eventuels cookies existants (sauf off)
-                foreach ($_COOKIE['favoris'] as $page => $cpt)
+                foreach ($_COOKIE['favorites'] as $page => $cpt)
                 {
                     if ($page != "off")
                     {
-                        setCookie("favoris[$page]", "", time() - 3600, '/');
+                        setCookie("favorites[$page]", "", time() - 3600, '/');
                     }
                 }
                 return;
@@ -101,12 +101,12 @@ class action_plugin_favoris extends DokuWiki_Action_Plugin
             if ($fav['off'] == 2)
             {
                 //On efface tous les cookies (y compris off)
-                foreach ($_COOKIE['favoris'] as $page => $cpt)
+                foreach ($_COOKIE['favorites'] as $page => $cpt)
                 {
                     list($cpt, $date) = explode(";", $cpt);
                     if ($cpt != "-1")
                     {
-                        setCookie("favoris[$page]", "", time() - 3600, '/');
+                        setCookie("favorites[$page]", "", time() - 3600, '/');
                     }
                 }
                 return;
@@ -136,13 +136,13 @@ class action_plugin_favoris extends DokuWiki_Action_Plugin
         }
 
         //On positionne le cookie
-        setCookie("favoris[" . $INFO['id'] . "]", "$cpt;" . time(), time() + 60 * 60 * 24 * 7, '/');
+        setCookie("favorites[" . $INFO['id'] . "]", "$cpt;" . time(), time() + 60 * 60 * 24 * 7, '/');
     }
 
 
     function _handle_tpl_act(&$event, $param)
     {
-        if ($event->data != 'snapfavoris')
+        if ($event->data != 'snapfavorites')
         {
             return;
         }
@@ -150,7 +150,7 @@ class action_plugin_favoris extends DokuWiki_Action_Plugin
 
         print "<h1>" . $this->getLang('fav_mosaique') . "</h1>";
 
-        $fav = $_COOKIE['favoris'];
+        $fav = $_COOKIE['favorites'];
         if (!$fav)
         {
             print $this->getLang('fav_pasencore');
