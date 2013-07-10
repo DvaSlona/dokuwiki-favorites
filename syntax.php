@@ -33,37 +33,73 @@ require_once(DOKU_PLUGIN . 'syntax.php');
 
 /**
  * Синтаксический модуль
+ *
+ * @property Doku_Lexer $Lexer
  */
 class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
 {
-    function connectTo($mode)
-    {
-        $this->Lexer->addSpecialPattern('~~FAVORIS~~', $mode, 'plugin_favoris');
-    }
-
-    function getType()
+    /**
+     * Возвращает тип синтаксиса модуля
+     *
+     * @return string
+     */
+    public function getType()
     {
         return 'disabled';
     }
 
-    function getSort()
+    /**
+     * Возвращает число, определяющее в каком порядке добавляются режимы
+     *
+     * @return int
+     */
+    public function getSort()
     {
         return 667;
     }
 
-    function handle($match, $state, $pos, &$handler)
+    /**
+     * Подключает режим
+     *
+     * @param string $mode
+     */
+    public function connectTo($mode)
+    {
+        $this->Lexer->addSpecialPattern('~~FAVORITES~~', $mode, 'plugin_favorites');
+    }
+
+    /**
+     * Подготавливает данные для отрисовки
+     *
+     * @param string       $match
+     * @param int          $state
+     * @param int          $pos
+     * @param Doku_Handler $handler
+     *
+     * @return array
+     */
+    public function handle($match, $state, $pos, &$handler)
     {
         return array($match, $state, $pos);
     }
 
-    function render($mode, &$renderer, $data)
+    /**
+     * Отрисовывает данные
+     *
+     * @param string $mode
+     * @param object $renderer
+     * @param array  $data
+     *
+     * @return bool
+     */
+    public function render($mode, &$renderer, $data)
     {
         $maxFav = 5;
         $maxRec = 5;
 
         if ($mode == 'xhtml')
         {
-            $renderer->info['cache'] = FALSE;
+            $renderer->info['cache'] = false;
             $renderer->doc .= '<script type="text/javascript" charset="utf-8" src="' . DOKU_URL .
                 'lib/plugins/favoris/favoris.js" ></script>';
 
@@ -360,8 +396,15 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
         return false;
     }
 
-
-    function donneLien($page, $title = "")
+    /**
+     * Возвращает ссылку?
+     *
+     * @param mixed  $page
+     * @param string $title
+     *
+     * @return string
+     */
+    private function donneLien($page, $title = "")
     {
         if (!plugin_isdisabled('pagelist'))
         {
