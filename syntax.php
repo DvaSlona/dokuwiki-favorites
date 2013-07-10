@@ -407,39 +407,43 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
      */
     private function donneLien($page, $title = "")
     {
-        if (!plugin_isdisabled('pagelist'))
+        $titrePage = p_get_first_heading($page);
+        if (!$titrePage)
         {
-            $pagelist = plugin_load('helper', 'pagelist');
-        }
-
-        if (!$pagelist)
-        {
-            $titrePage = explode(":", $page);
-            $titrePage = $titrePage[sizeof($titrePage) - 1];
-            $titrePage = str_replace('_', ' ', $titrePage);
-        }
-        else
-        {
-            $pagelist->page['id'] = $page;
-            $pagelist->page['exists'] = 1;
-            $pagelist->_meta = NULL;
-            $titrePage = $pagelist->_getMeta('title');
-            if (!$titrePage)
+            if (!plugin_isdisabled('pagelist'))
             {
-                $titrePage = str_replace('_', ' ', noNS($page));
+                $pagelist = plugin_load('helper', 'pagelist');
             }
-            $titrePage = hsc($titrePage);
+
+            if (!$pagelist)
+            {
+                $titrePage = explode(":", $page);
+                $titrePage = $titrePage[sizeof($titrePage) - 1];
+                $titrePage = str_replace('_', ' ', $titrePage);
+            }
+            else
+            {
+                $pagelist->page['id'] = $page;
+                $pagelist->page['exists'] = 1;
+                $pagelist->_meta = null;
+                $titrePage = $pagelist->_getMeta('title');
+                if (!$titrePage)
+                {
+                    $titrePage = str_replace('_', ' ', noNS($page));
+                }
+                $titrePage = hsc($titrePage);
+            }
         }
         if (@file_exists(fullpath(wikiFN($page))))
         {
             return "<a href='doku.php?id=" . $page .
-            "' class='wikilink1' style='font-weight: lighter;' title='$page" . $title .
-            "'>$titrePage</a>";
+                "' class='wikilink1' style='font-weight: lighter;' title='$page" . $title .
+                "'>$titrePage</a>";
         }
         else
         {
             return "<a href='doku.php?id=" . $page .
-            "' class='wikilink2' style='font-weight: lighter;' title='$page" . $title .
+                "' class='wikilink2' style='font-weight: lighter;' title='$page" . $title .
             "' rel='nofollow'>$titrePage</a>";
         }
     }
