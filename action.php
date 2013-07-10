@@ -33,20 +33,6 @@ require_once(DOKU_PLUGIN . 'action.php');
 
 class action_plugin_favorites extends DokuWiki_Action_Plugin
 {
-
-    /**
-     * return some info
-     */
-    function getInfo()
-    {
-        return array(
-            'author' => 'Etienne M.',
-            'email' => 'emauvaisfr@yahoo.fr',
-            'date' => @file_get_contents(DOKU_PLUGIN . 'favorites/VERSION'),
-            'name' => 'favorites Plugin',
-        );
-    }
-
     /**
      * Constructor
      */
