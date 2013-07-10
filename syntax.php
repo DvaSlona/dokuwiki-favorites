@@ -137,13 +137,6 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
 						   return ($date1 > $date2) ? -1 : 1;
 	                                          '));
 
-                $idx1 = 0;
-                if ($idx1)
-                {
-                    $renderer->listu_close();
-                }
-                //else $renderer->doc .= " <br />";
-
                 //Pages favorites
                 //Tri des pages par visites decroissantes
                 uasort($fav, create_function('$a, $b', '
@@ -208,10 +201,7 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                 {
                     if (!plugin_isdisabled('snap'))
                     {
-                        $snap = plugin_load('helper', 'snap');
-                    }
-                    if ($snap)
-                    {
+                        plugin_load('helper', 'snap');
                         $renderer->listitem_open(1);
                         $renderer->doc .= "<a href=\"?do=snapfavorites\">" .
                             $this->getLang('fav_mosaique') . " >></a><br />";
@@ -222,8 +212,7 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                 {
                     $renderer->listu_close();
                 }
-
-                if (!$idx1 && !$idx2)
+                else
                 {
                     $renderer->doc .= " <br />";
                 }
