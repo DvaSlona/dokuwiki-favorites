@@ -307,7 +307,7 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                 {
                     $renderer->listu_close();
                 }
-                $this->renderConfig($renderer, $maxRec, $maxFav);
+                $this->renderConfig($renderer, $maxFav);
             }
             else
             {
@@ -372,26 +372,12 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
      * Настройки
      *
      * @param Doku_Renderer_xhtml $renderer
-     * @param int                 $maxRec
      * @param int                 $maxFav
      */
-    private function renderConfig($renderer, $maxRec, $maxFav)
+    private function renderConfig($renderer, $maxFav)
     {
         $renderer->doc .= "<fieldset style=\"text-align:left;\"><legend><b>" .
             $this->getLang('fav_config') . "</b></legend>";
-        $renderer->doc .= $this->getLang('fav_afficher') . " ";
-        $renderer->doc .= "<select value=\"$maxRec\" id=\"maxRec\">";
-        for ($i = 0; $i < 10; $i++)
-        {
-            $renderer->doc .= "<option";
-            if ($i == $maxRec)
-            {
-                $renderer->doc .= " selected=\"selected\"";
-            }
-            $renderer->doc .= ">$i</option>";
-        }
-        $renderer->doc .= "</select>";
-        $renderer->doc .= " " . $this->getLang('fav_conf_prec') . "<br />";
         $renderer->doc .= $this->getLang('fav_afficher') . " ";
         $renderer->doc .= "<select value=\"$maxFav\" id=\"maxFav\">";
         for ($i = 0; $i < 10; $i++)
