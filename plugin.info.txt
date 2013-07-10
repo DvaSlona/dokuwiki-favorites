@@ -1,0 +1,7 @@
+base   favorites
+author Михаил Красильников
+email  mk@dvaslona.ru
+date   2013-07-10
+name   Favorites
+desc   Display favorite pages
+url    https://github.com/DvaSlona/dokuwiki-favorites

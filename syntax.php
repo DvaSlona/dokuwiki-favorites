@@ -37,18 +37,8 @@ require_once(DOKU_PLUGIN . 'syntax.php');
  * All DokuWiki plugins to extend the parser/rendering mechanism
  * need to inherit from this class
  */
-class syntax_plugin_favoris extends DokuWiki_Syntax_Plugin {
-    function getInfo() {
-        return array(
-        'author'  => 'Etienne M.',
-        'email'   => 'emauvaisfr@yahoo.fr',
-        'date'    => @file_get_contents(DOKU_PLUGIN.'favoris/VERSION'),
-        'name'    => 'favoris Plugin',
-        'desc'    => html_entity_decode($this->getLang('fav_description')),
-        'url'     => 'http://www.dokuwiki.org/plugin:favoris'
-        );
-    }
-
+class syntax_plugin_favoris extends DokuWiki_Syntax_Plugin
+{
     function connectTo($mode) {
         $this->Lexer->addSpecialPattern('~~FAVORIS~~', $mode, 'plugin_favoris');
     }
