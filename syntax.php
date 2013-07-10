@@ -71,14 +71,14 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
     /**
      * Подготавливает данные для отрисовки
      *
-     * @param string       $match
-     * @param int          $state
-     * @param int          $pos
+     * @param string       $match    текст, соответствующий синтаксису модуля
+     * @param int          $state    стадия совпадения (см. константы DOKU_LEXER_XXX)
+     * @param int          $pos      позиция, где обнаружено совпадение с синтаксисом
      * @param Doku_Handler $handler
      *
-     * @return array
+     * @return array  инструкции для метода {@link render()}
      */
-    public function handle($match, $state, $pos, &$handler)
+    public function handle($match, $state, $pos, $handler)
     {
         return array($match, $state, $pos);
     }
@@ -86,26 +86,27 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
     /**
      * Отрисовывает данные
      *
-     * @param string $mode
-     * @param object $renderer
-     * @param array  $data
+     * @param string        $mode      имя формата вывода, который будет использован отрисовщиком
+     * @param Doku_Renderer $renderer  отрисовщик
+     * @param array         $data      данные, переданные методом {@link handle()}
      *
      * @return bool
      */
-    public function render($mode, &$renderer, $data)
+    public function render($mode, $renderer, $data)
     {
         $maxFav = 5;
         $maxRec = 5;
 
-        if ($mode == 'xhtml')
+        if ('xhtml' == $mode)
         {
+            /** @var Doku_Renderer_xhtml $renderer */
             $renderer->info['cache'] = false;
             $renderer->doc .= '<script type="text/javascript" charset="utf-8" src="' . DOKU_URL .
-                'lib/plugins/favoris/favoris.js" ></script>';
+                'lib/plugins/favorites/favorites.js" ></script>';
 
-            if (isset($_COOKIE['favoris']))
+            if (isset($_COOKIE['favorites']))
             {
-                $fav = $_COOKIE['favoris'];
+                $fav = $_COOKIE['favorites'];
 
                 //Si la page off existe et vaut 1, on sort
                 if (isset($fav['off']) && $fav['off'] == 1)
@@ -113,19 +114,19 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                     $renderer->doc .= $this->getLang('fav_desact');
                     //Activer
                     $renderer->doc .= ' <img src="' . DOKU_URL .
-                        'lib/plugins/favoris/images/activer.png" border="0" height="18" ' .
+                        'lib/plugins/favorites/images/activer.png" border="0" height="18" ' .
                         'style="vertical-align:middle;" /> <a href="javascript:deleteCookie(' .
-                        '\'favoris[off]\', \'/\'); recharge();">' . $this->getLang('fav_activer') .
+                        '\'favorites[off]\', \'/\'); recharge();">' . $this->getLang('fav_activer') .
                         '</a>.<br />';
                     $renderer->doc .= $this->getLang('fav_cookies') . '<br />';
-                    return;
+                    return true;
                 }
 
                 //Si la page off existe et vaut 2, on recharge la page
                 if (isset($fav['off']) && $fav['off'] == 2)
                 {
                     $renderer->doc .= "<script>recharge();</script>";
-                    return;
+                    return true;
                 }
 
                 //Combien de pages afficher au maximum ?
@@ -241,17 +242,17 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                         $renderer->listitem_open(1);
                         $renderer->doc .= $lien;
                         //Reset
-                        $renderer->doc .= ' <a href="javascript:deleteCookie(\'favoris[' . $page .
+                        $renderer->doc .= ' <a href="javascript:deleteCookie(\'favorites[' . $page .
                             ']\', \'/\'); cache(\'' . $page . '\');"><img src="' . DOKU_URL .
-                            'lib/plugins/favoris/images/reset.png" title="' .
+                            'lib/plugins/favorites/images/reset.png" title="' .
                             $this->getLang('fav_reset') .
                             '" border="0" height="18" style="vertical-align:middle; ' .
                             'display:none;" name="ctrl" /></a>';
                         //Exclure
-                        $renderer->doc .= ' <a  href="javascript:setCookie(\'favoris[' . $page .
+                        $renderer->doc .= ' <a  href="javascript:setCookie(\'favorites[' . $page .
                             ']\', -1, new Date(\'July 21, 2099 00:00:00\'), \'/\'); cache(\'' .
                             $page . '\');"><img src="' . DOKU_URL .
-                            'lib/plugins/favoris/images/exclure.png" title="' .
+                            'lib/plugins/favorites/images/exclure.png" title="' .
                             $this->getLang('fav_exclure') .
                             '" border="0" height="18" style="vertical-align:middle; ' .
                             'display:none;" name="ctrl" /></a>';
@@ -274,7 +275,7 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                     if ($snap)
                     {
                         $renderer->listitem_open(1);
-                        $renderer->doc .= "<a href=\"?do=snapfavoris\">" .
+                        $renderer->doc .= "<a href=\"?do=snapfavorites\">" .
                             $this->getLang('fav_mosaique') . " >></a><br />";
                         $renderer->listitem_close();
                     }
@@ -293,7 +294,7 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                 //Voir/cacher les pages exclures et la configuration
                 $renderer->doc .= '<a href="javascript:afficheMasque(\'exclues\'); ' .
                     'this.blur();"><img src="' . DOKU_URL .
-                    'lib/plugins/favoris/images/voir-cacher.png" title="' .
+                    'lib/plugins/favorites/images/voir-cacher.png" title="' .
                     $this->getLang('fav_voircacher') . '" border="0" height="18" ' .
                     'style="vertical-align:middle; display:none;" name="ctrl" /></a><div ' .
                     'id="exclues" style="display:none;">';
@@ -316,9 +317,9 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                         $renderer->listitem_open(1);
                         $renderer->doc .= $lien;
                         //Inclure
-                        $renderer->doc .= ' <a href="javascript:deleteCookie(\'favoris[' . $page .
+                        $renderer->doc .= ' <a href="javascript:deleteCookie(\'favorites[' . $page .
                             ']\', \'/\'); cache(\'ex_' . $page . '\');"><img src="' . DOKU_URL .
-                            'lib/plugins/favoris/images/inclure.png" title="' .
+                            'lib/plugins/favorites/images/inclure.png" title="' .
                             $this->getLang('fav_inclure') . '" border="0" height="18" ' .
                             'style="vertical-align:middle;" /></a>';
                         $renderer->doc .= "</div>"; //</li></div>";
@@ -366,22 +367,22 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
 
                 //Rafraichir
                 $renderer->doc .= ' <a href="javascript:recharge();"><img src="' . DOKU_URL .
-                    'lib/plugins/favoris/images/rafraichir.png" title="' .
+                    'lib/plugins/favorites/images/rafraichir.png" title="' .
                     $this->getLang('fav_rafraichir') .
                     '" border="0" height="18" style="vertical-align:middle; display:none;" ' .
                     'name="ctrl" /></a> ';
                 //Reset tous
                 $renderer->doc .= ' <a href="javascript:if(confirm(\'' .
-                    $this->getLang('fav_confResetAll') . '\')) {setCookie(\'favoris[off]\', 2, ' .
+                    $this->getLang('fav_confResetAll') . '\')) {setCookie(\'favorites[off]\', 2, ' .
                     'new Date(\'July 21, 2099 00:00:00\'), \'/\'); recharge();}"><img src="' .
-                    DOKU_URL . 'lib/plugins/favoris/images/reset.png" title="' .
+                    DOKU_URL . 'lib/plugins/favorites/images/reset.png" title="' .
                     $this->getLang('fav_resetall') . '" border="0" height="18" ' .
                     'style="vertical-align:middle; display:none;" name="ctrl" /></a> ';
                 //Desactiver
                 $renderer->doc .= ' <a href="javascript:if(confirm(\'' .
-                    $this->getLang('fav_confirmation') . '\')) {setCookie(\'favoris[off]\', 1, ' .
+                    $this->getLang('fav_confirmation') . '\')) {setCookie(\'favorites[off]\', 1, ' .
                     'new Date(\'July 21, 2099 00:00:00\'), \'/\'); recharge();}"><img src="' .
-                    DOKU_URL . 'lib/plugins/favoris/images/desactiver.png" title="' .
+                    DOKU_URL . 'lib/plugins/favorites/images/desactiver.png" title="' .
                     $this->getLang('fav_desactiver') . '" border="0" height="18" ' .
                     'style="vertical-align:middle; display:none;" name="ctrl" /></a> ';
 
