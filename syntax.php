@@ -106,27 +106,6 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
             {
                 $fav = $_COOKIE['favorites'];
 
-                //Si la page off existe et vaut 1, on sort
-                if (isset($fav['off']) && $fav['off'] == 1)
-                {
-                    $renderer->doc .= $this->getLang('fav_desact');
-                    //Activer
-                    $renderer->doc .= ' <img src="' . DOKU_URL .
-                        'lib/plugins/favorites/images/activer.png" border="0" height="18" ' .
-                        'style="vertical-align:middle;" /> <a href="javascript:deleteCookie(' .
-                        '\'favorites[off]\', \'/\'); recharge();">' . $this->getLang('fav_activer') .
-                        '</a>.<br />';
-                    $renderer->doc .= $this->getLang('fav_cookies') . '<br />';
-                    //return true;
-                }
-
-                //Si la page off existe et vaut 2, on recharge la page
-                if (isset($fav['off']) && $fav['off'] == 2)
-                {
-                    $renderer->doc .= "<script>recharge();</script>";
-                    //return true;
-                }
-
                 //Combien de pages afficher au maximum ?
                 $max = $maxFav;
                 if (isset($_COOKIE['fav_maxFav']))
@@ -437,20 +416,6 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
             $this->getLang('fav_rafraichir') .
             '" border="0" height="18" style="vertical-align:middle; display:none;" ' .
             'name="ctrl" /></a> ';
-        //Reset tous
-        $renderer->doc .= ' <a href="javascript:if(confirm(\'' .
-            $this->getLang('fav_confResetAll') . '\')) {setCookie(\'favorites[off]\', 2, ' .
-            'new Date(\'July 21, 2099 00:00:00\'), \'/\'); recharge();}"><img src="' .
-            DOKU_URL . 'lib/plugins/favorites/images/reset.png" title="' .
-            $this->getLang('fav_resetall') . '" border="0" height="18" ' .
-            'style="vertical-align:middle; display:none;" name="ctrl" /></a> ';
-        //Desactiver
-        $renderer->doc .= ' <a href="javascript:if(confirm(\'' .
-            $this->getLang('fav_confirmation') . '\')) {setCookie(\'favorites[off]\', 1, ' .
-            'new Date(\'July 21, 2099 00:00:00\'), \'/\'); recharge();}"><img src="' .
-            DOKU_URL . 'lib/plugins/favorites/images/desactiver.png" title="' .
-            $this->getLang('fav_desactiver') . '" border="0" height="18" ' .
-            'style="vertical-align:middle; display:none;" name="ctrl" /></a> ';
 
         $renderer->doc .= "</div>";
     }
