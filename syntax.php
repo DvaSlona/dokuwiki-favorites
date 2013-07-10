@@ -95,7 +95,6 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
     public function render($mode, $renderer, $data)
     {
         $maxFav = 5;
-        $maxRec = 5;
 
         if ('xhtml' == $mode)
         {
@@ -118,17 +117,6 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                 }
                 $maxFav = $max;
 
-                $max = $maxRec;
-                if (isset($_COOKIE['fav_maxRec']))
-                {
-                    $max = $_COOKIE['fav_maxRec'];
-                }
-                if (intval($max) != $max)
-                {
-                    $max = $maxRec;
-                }
-                $maxRec = $max;
-
                 $renderer->doc .= '<div id="enveloppe" ondblclick="afficherControles(event,0);" ' .
                     'onmouseover="afficherControles(event,2000);" onmouseout="masquerControles' .
                     '(event);" title="' . $this->getLang('fav_flotter') . '">';
@@ -150,33 +138,6 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
 	                                          '));
 
                 $idx1 = 0;
-                if ($maxRec > 0)
-                {
-                    foreach ($fav as $page => $cpt)
-                    {
-                        list($cpt, $date) = explode(";", $cpt);
-                        if ($page == 'off' || $cpt < 1 || !$date)
-                        {
-                            continue;
-                        }
-                        if (!$idx1)
-                        {
-                            $renderer->doc .= "<b>" . $this->getLang('fav_prec') . "</b>";
-                            $renderer->listu_open();
-                        }
-
-                        $lien = $this->donneLien($page, "");
-                        $renderer->listitem_open(1);
-                        $renderer->doc .= $lien;
-                        $renderer->listitem_close();
-
-                        $idx1++;
-                        if ($idx1 >= $maxRec)
-                        {
-                            break;
-                        }
-                    }
-                }
                 if ($idx1)
                 {
                     $renderer->listu_close();
