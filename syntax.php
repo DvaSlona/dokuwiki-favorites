@@ -101,8 +101,6 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
         {
             /** @var Doku_Renderer_xhtml $renderer */
             $renderer->info['cache'] = false;
-            $renderer->doc .= '<script type="text/javascript" charset="utf-8" src="' . DOKU_URL .
-                'lib/plugins/favorites/favorites.js" ></script>';
 
             if (isset($_COOKIE['favorites']))
             {
