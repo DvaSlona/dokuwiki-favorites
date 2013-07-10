@@ -117,14 +117,14 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                         '\'favorites[off]\', \'/\'); recharge();">' . $this->getLang('fav_activer') .
                         '</a>.<br />';
                     $renderer->doc .= $this->getLang('fav_cookies') . '<br />';
-                    return true;
+                    //return true;
                 }
 
                 //Si la page off existe et vaut 2, on recharge la page
                 if (isset($fav['off']) && $fav['off'] == 2)
                 {
                     $renderer->doc .= "<script>recharge();</script>";
-                    return true;
+                    //return true;
                 }
 
                 //Combien de pages afficher au maximum ?
@@ -328,65 +328,8 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                 {
                     $renderer->listu_close();
                 }
-
-                //Configuration
-                $renderer->doc .= "<fieldset style=\"text-align:left;\"><legend><b>" .
-                    $this->getLang('fav_config') . "</b></legend>";
-                $renderer->doc .= $this->getLang('fav_afficher') . " ";
-                $renderer->doc .= "<select value=\"$maxRec\" id=\"maxRec\">";
-                for ($i = 0; $i < 10; $i++)
-                {
-                    $renderer->doc .= "<option";
-                    if ($i == $maxRec)
-                    {
-                        $renderer->doc .= " selected=\"selected\"";
-                    }
-                    $renderer->doc .= ">$i</option>";
-                }
-                $renderer->doc .= "</select>";
-                $renderer->doc .= " " . $this->getLang('fav_conf_prec') . "<br />";
-                $renderer->doc .= $this->getLang('fav_afficher') . " ";
-                $renderer->doc .= "<select value=\"$maxFav\" id=\"maxFav\">";
-                for ($i = 0; $i < 10; $i++)
-                {
-                    $renderer->doc .= "<option";
-                    if ($i == $maxFav)
-                    {
-                        $renderer->doc .= " selected=\"selected\"";
-                    }
-                    $renderer->doc .= ">$i</option>";
-                }
-                $renderer->doc .= "</select>";
-                $renderer->doc .= " " . $this->getLang('fav_conf_pfav') . "<br />";
-                $renderer->doc .= "<input type=\"button\" value=\"" . $this->getLang('fav_sauver') .
-                    "\" onclick=\"javascript:sauvePref();\" />";
-                $renderer->doc .= "</fieldset>";
-                $renderer->doc .= "</div>";
-
-                //Rafraichir
-                $renderer->doc .= ' <a href="javascript:recharge();"><img src="' . DOKU_URL .
-                    'lib/plugins/favorites/images/rafraichir.png" title="' .
-                    $this->getLang('fav_rafraichir') .
-                    '" border="0" height="18" style="vertical-align:middle; display:none;" ' .
-                    'name="ctrl" /></a> ';
-                //Reset tous
-                $renderer->doc .= ' <a href="javascript:if(confirm(\'' .
-                    $this->getLang('fav_confResetAll') . '\')) {setCookie(\'favorites[off]\', 2, ' .
-                    'new Date(\'July 21, 2099 00:00:00\'), \'/\'); recharge();}"><img src="' .
-                    DOKU_URL . 'lib/plugins/favorites/images/reset.png" title="' .
-                    $this->getLang('fav_resetall') . '" border="0" height="18" ' .
-                    'style="vertical-align:middle; display:none;" name="ctrl" /></a> ';
-                //Desactiver
-                $renderer->doc .= ' <a href="javascript:if(confirm(\'' .
-                    $this->getLang('fav_confirmation') . '\')) {setCookie(\'favorites[off]\', 1, ' .
-                    'new Date(\'July 21, 2099 00:00:00\'), \'/\'); recharge();}"><img src="' .
-                    DOKU_URL . 'lib/plugins/favorites/images/desactiver.png" title="' .
-                    $this->getLang('fav_desactiver') . '" border="0" height="18" ' .
-                    'style="vertical-align:middle; display:none;" name="ctrl" /></a> ';
-
-                $renderer->doc .= "</div>";
+                $this->renderConfig($renderer, $maxRec, $maxFav);
             }
-
             else
             {
                 $renderer->doc .= $this->getLang('fav_pasencore');
@@ -444,6 +387,72 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                 "' class='wikilink2' style='font-weight: lighter;' title='$page" . $title .
             "' rel='nofollow'>$titrePage</a>";
         }
+    }
+
+    /**
+     * Настройки
+     *
+     * @param Doku_Renderer_xhtml $renderer
+     * @param int                 $maxRec
+     * @param int                 $maxFav
+     */
+    private function renderConfig($renderer, $maxRec, $maxFav)
+    {
+        $renderer->doc .= "<fieldset style=\"text-align:left;\"><legend><b>" .
+            $this->getLang('fav_config') . "</b></legend>";
+        $renderer->doc .= $this->getLang('fav_afficher') . " ";
+        $renderer->doc .= "<select value=\"$maxRec\" id=\"maxRec\">";
+        for ($i = 0; $i < 10; $i++)
+        {
+            $renderer->doc .= "<option";
+            if ($i == $maxRec)
+            {
+                $renderer->doc .= " selected=\"selected\"";
+            }
+            $renderer->doc .= ">$i</option>";
+        }
+        $renderer->doc .= "</select>";
+        $renderer->doc .= " " . $this->getLang('fav_conf_prec') . "<br />";
+        $renderer->doc .= $this->getLang('fav_afficher') . " ";
+        $renderer->doc .= "<select value=\"$maxFav\" id=\"maxFav\">";
+        for ($i = 0; $i < 10; $i++)
+        {
+            $renderer->doc .= "<option";
+            if ($i == $maxFav)
+            {
+                $renderer->doc .= " selected=\"selected\"";
+            }
+            $renderer->doc .= ">$i</option>";
+        }
+        $renderer->doc .= "</select>";
+        $renderer->doc .= " " . $this->getLang('fav_conf_pfav') . "<br />";
+        $renderer->doc .= "<input type=\"button\" value=\"" . $this->getLang('fav_sauver') .
+            "\" onclick=\"javascript:sauvePref();\" />";
+        $renderer->doc .= "</fieldset>";
+        $renderer->doc .= "</div>";
+
+        //Rafraichir
+        $renderer->doc .= ' <a href="javascript:recharge();"><img src="' . DOKU_URL .
+            'lib/plugins/favorites/images/rafraichir.png" title="' .
+            $this->getLang('fav_rafraichir') .
+            '" border="0" height="18" style="vertical-align:middle; display:none;" ' .
+            'name="ctrl" /></a> ';
+        //Reset tous
+        $renderer->doc .= ' <a href="javascript:if(confirm(\'' .
+            $this->getLang('fav_confResetAll') . '\')) {setCookie(\'favorites[off]\', 2, ' .
+            'new Date(\'July 21, 2099 00:00:00\'), \'/\'); recharge();}"><img src="' .
+            DOKU_URL . 'lib/plugins/favorites/images/reset.png" title="' .
+            $this->getLang('fav_resetall') . '" border="0" height="18" ' .
+            'style="vertical-align:middle; display:none;" name="ctrl" /></a> ';
+        //Desactiver
+        $renderer->doc .= ' <a href="javascript:if(confirm(\'' .
+            $this->getLang('fav_confirmation') . '\')) {setCookie(\'favorites[off]\', 1, ' .
+            'new Date(\'July 21, 2099 00:00:00\'), \'/\'); recharge();}"><img src="' .
+            DOKU_URL . 'lib/plugins/favorites/images/desactiver.png" title="' .
+            $this->getLang('fav_desactiver') . '" border="0" height="18" ' .
+            'style="vertical-align:middle; display:none;" name="ctrl" /></a> ';
+
+        $renderer->doc .= "</div>";
     }
 }
 
