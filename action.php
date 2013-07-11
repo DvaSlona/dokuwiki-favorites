@@ -31,26 +31,37 @@ if (!defined('DOKU_PLUGIN'))
 }
 require_once(DOKU_PLUGIN . 'action.php');
 
-class action_plugin_favorites extends DokuWiki_Action_Plugin
+/**
+ * Обработчики событий
+ */
+class Action_Plugin_Favorites extends DokuWiki_Action_Plugin
 {
     /**
-     * Constructor
+     * Конструктор
      */
-    function action_plugin_favorites()
+    public function __construct()
     {
         $this->setupLocale();
     }
 
     /**
-     * register the eventhandlers
+     * Регистрирует обработчики событий
+     *
+     * @param Doku_Event_Handler $controller
      */
-    function register(&$contr)
+    public function register(Doku_Event_Handler $controller)
     {
-        $contr->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, '_update_cookie', array());
-        $contr->register_hook('TPL_ACT_UNKNOWN', 'BEFORE', $this, '_handle_tpl_act', array());
+        $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'updateCookie',
+            array());
+        $controller->register_hook('TPL_ACT_UNKNOWN', 'BEFORE', $this, 'handleTemplateAction',
+            array());
     }
 
-    function _update_cookie(&$event, $param)
+    /**
+     * @param Doku_Event $event
+     * @param mixed      $param
+     */
+    public function updateCookie(Doku_Event $event, $param)
     {
         global $INFO;
 
@@ -125,12 +136,17 @@ class action_plugin_favorites extends DokuWiki_Action_Plugin
         setCookie("favorites[" . $INFO['id'] . "]", "$cpt;" . time(), time() + 60 * 60 * 24 * 7, '/');
     }
 
-
-    function _handle_tpl_act(&$event, $param)
+    /**
+     * @param Doku_Event $event
+     * @param mixed      $param
+     *
+     * @return mixed
+     */
+    public function handleTemplateAction(Doku_Event $event, $param)
     {
         if ($event->data != 'snapfavorites')
         {
-            return;
+            return null;
         }
         $event->preventDefault();
 
@@ -203,7 +219,8 @@ class action_plugin_favorites extends DokuWiki_Action_Plugin
 
             print "<a href=\"" . $snap->url . "\" title=\"$page$titrePage\" $target>";
 
-            print "<img src=\"" . DOKU_URL . "lib/plugins/snap/image.php?image=" . rawurlencode($imagePath) . "\" $style/>";
+            print "<img src=\"" . DOKU_URL . "lib/plugins/snap/image.php?image=" .
+                rawurlencode($imagePath) . "\" $style/>";
             print "</a>";
 
             $idx++;
@@ -219,6 +236,7 @@ class action_plugin_favorites extends DokuWiki_Action_Plugin
 
         print "</div>";
         print "<br /><hr />";
+        return null;
     }
 }
 
