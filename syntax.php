@@ -25,18 +25,12 @@
  * <http://www.gnu.org/licenses/>
  */
 
-if (!defined('DOKU_PLUGIN'))
-{
-    define('DOKU_PLUGIN', DOKU_INC . 'lib/plugins/');
-}
-require_once(DOKU_PLUGIN . 'syntax.php');
-
 /**
  * Синтаксический модуль
  *
  * @property Doku_Lexer $Lexer
  */
-class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
+class Syntax_Plugin_favorites extends DokuWiki_Syntax_Plugin
 {
     /**
      * Возвращает тип синтаксиса модуля
@@ -94,7 +88,7 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
      */
     public function render($mode, $renderer, $data)
     {
-        $maxFav = 5;
+        $maxFav = 10;
 
         if ('xhtml' == $mode)
         {
@@ -117,60 +111,57 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                 }
                 $maxFav = $max;
 
-                $renderer->doc .= '<div id="enveloppe" ondblclick="afficherControles(event,0);" ' .
-                    'onmouseover="afficherControles(event,2000);" onmouseout="masquerControles' .
-                    '(event);" title="' . $this->getLang('fav_flotter') . '">';
+                uasort($fav,
+                    function($a, $b)
+                    {
+                        list($cpt1, $date)=explode(";", $a);
+                        list($cpt2, $date)=explode(";", $b);
 
-                //Pages recentes
-                //Tri des pages par date de visite decroissante
-                uasort($fav, create_function('$a, $b', '
-	                                           list($cpt, $date1)=explode(";", $a);
-						   list($cpt, $date2)=explode(";", $b);
+                        $cpt1=intval($cpt1);
+                        $cpt2=intval($cpt2);
 
-						   if ($date1=="") $date1=0;
-						   if ($date2=="") $date2=0;
+                        if ($cpt1==$cpt2)
+                        {
+                            return 0;
+                        }
+                        return ($cpt1 > $cpt2) ? -1 : 1;
+                    });
 
-						   $date1=intval($date1);
-						   $date2=intval($date2);
-
-						   if ($date1==$date2) return 0;
-						   return ($date1 > $date2) ? -1 : 1;
-	                                          '));
-
-                //Pages favorites
-                //Tri des pages par visites decroissantes
-                uasort($fav, create_function('$a, $b', '
-	                                           list($cpt1, $date)=explode(";", $a);
-						   list($cpt2, $date)=explode(";", $b);
-
-						   $cpt1=intval($cpt1);
-						   $cpt2=intval($cpt2);
-
-						   if ($cpt1==$cpt2) return 0;
-						   return ($cpt1 > $cpt2) ? -1 : 1;
-	                                           '));
-                $idx2 = 0;
+                $idx = 0;
                 if ($maxFav > 0)
                 {
-                    foreach ($fav as $page => $cpt)
-                    {
-                        list($cpt, $date) = explode(";", $cpt);
+                    $renderer->strong_open();
+                    $renderer->doc .= $this->getLang('favorites_favorite_pages');
+                    $renderer->strong_close();
+                    $renderer->listu_open();
 
-                        if ($page == 'off' || $cpt < 1)
+                    foreach ($fav as $pageId => $cpt)
+                    {
+                        list($cpt, $date) = explode(';', $cpt);
+
+                        if ($pageId == 'off' || $cpt < 1)
                         {
                             continue;
                         }
 
-                        if (!$idx2)
+                        $ns = getNS($pageId);
+                        resolve_pageid($ns, $pageId, $exists);
+                        if (!$exists)
                         {
-                            $renderer->doc .= "<b>" . $this->getLang('fav_pfav') . "</b>";
-                            $renderer->listu_open();
+                            continue;
                         }
 
-                        $lien = $this->donneLien($page, " ($cpt " . $this->getLang('fav_visites') . ")");
+                        if (false === $ns)
+                        {
+                            $pageId = ':' . $pageId;
+                        }
+
+                        $renderer->listitem_open(1);
+                        $renderer->internallink($pageId);
+
+                        /*$lien = $this->donneLien($page, " ($cpt " . $this->getLang('fav_visites') . ")");
 
                         $renderer->doc .= "<div id=\"$page\">";
-                        $renderer->listitem_open(1);
                         $renderer->doc .= $lien;
                         //Reset
                         $renderer->doc .= ' <a href="javascript:deleteCookie(\'favorites[' . $page .
@@ -189,15 +180,16 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                             'display:none;" name="ctrl" /></a>';
                         $renderer->doc .= "</div>";
                         $renderer->listitem_close();
-
-                        $idx2++;
-                        if ($idx2 >= $maxFav)
+                        */
+                        $idx++;
+                        if ($idx >= $maxFav)
                         {
                             break;
                         }
                     }
-                }
-                if ($idx2)
+                    $renderer->listu_close();
+                }/*
+                if ($idx)
                 {
                     if (!plugin_isdisabled('snap'))
                     {
@@ -208,7 +200,7 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                         $renderer->listitem_close();
                     }
                 }
-                if ($idx2)
+                if ($idx)
                 {
                     $renderer->listu_close();
                 }
@@ -257,7 +249,7 @@ class Syntax_Plugin_Favorites extends DokuWiki_Syntax_Plugin
                 {
                     $renderer->listu_close();
                 }
-                $this->renderConfig($renderer, $maxFav);
+                $this->renderConfig($renderer, $maxFav);*/
             }
             else
             {

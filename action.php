@@ -34,7 +34,7 @@ require_once(DOKU_PLUGIN . 'action.php');
 /**
  * Обработчики событий
  */
-class Action_Plugin_Favorites extends DokuWiki_Action_Plugin
+class Action_Plugin_favorites extends DokuWiki_Action_Plugin
 {
     /**
      * Конструктор
