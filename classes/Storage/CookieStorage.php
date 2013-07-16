@@ -52,9 +52,58 @@ class CookieStorage
      *
      * @return array
      */
-    public function getFavorite($limit = 10)
+    public function getFavorites($limit = 10)
     {
-        return array();
+        $raw = array_key_exists('favorites', $_COOKIE)
+            ? $_COOKIE['favorites']
+            : array();
+
+        uasort($raw,
+            function($a, $b)
+            {
+                list($cpt1, $date)=explode(";", $a);
+                list($cpt2, $date)=explode(";", $b);
+
+                $cpt1=intval($cpt1);
+                $cpt2=intval($cpt2);
+
+                if ($cpt1==$cpt2)
+                {
+                    return 0;
+                }
+                return ($cpt1 > $cpt2) ? -1 : 1;
+            });
+
+        $favorites = array();
+        foreach ($raw as $pageId => $cpt)
+        {
+            list($cpt, $date) = explode(';', $cpt);
+
+            if ($pageId == 'off' || $cpt < 1)
+            {
+                continue;
+            }
+
+            $ns = getNS($pageId);
+            resolve_pageid($ns, $pageId, $exists);
+            if (!$exists)
+            {
+                continue;
+            }
+
+            if (false === $ns)
+            {
+                $pageId = ':' . $pageId;
+            }
+
+            $favorites []= $pageId;
+            if (count($favorites) == $limit)
+            {
+                break;
+            }
+        }
+
+        return $favorites;
     }
 }
 

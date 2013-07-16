@@ -25,6 +25,8 @@
  * <http://www.gnu.org/licenses/>
  */
 
+require __DIR__ . '/classes/Storage/CookieStorage.php';
+
 /**
  * Синтаксический модуль
  *
@@ -95,90 +97,45 @@ class Syntax_Plugin_favorites extends DokuWiki_Syntax_Plugin
 
             $storage = new \DvaSlona\DokuwikiFavorites\Storage\CookieStorage();
             $showLimit = $storage->getConfigValue('maxFav');
-            $favorites = $storage->getFavorite($showLimit ?: 10);
+            $favorites = $storage->getFavorites($showLimit ?: 10);
 
             if (count($favorites) > 0)
             {
-                $fav = $_COOKIE['favorites'];
+                $renderer->strong_open();
+                $renderer->doc .= $this->getLang('favorites_favorite_pages');
+                $renderer->strong_close();
+                $renderer->listu_open();
 
-                uasort($fav,
-                    function($a, $b)
-                    {
-                        list($cpt1, $date)=explode(";", $a);
-                        list($cpt2, $date)=explode(";", $b);
-
-                        $cpt1=intval($cpt1);
-                        $cpt2=intval($cpt2);
-
-                        if ($cpt1==$cpt2)
-                        {
-                            return 0;
-                        }
-                        return ($cpt1 > $cpt2) ? -1 : 1;
-                    });
-
-                $idx = 0;
-                if ($showLimit > 0)
+                foreach ($favorites as $pageId)
                 {
-                    $renderer->strong_open();
-                    $renderer->doc .= $this->getLang('favorites_favorite_pages');
-                    $renderer->strong_close();
-                    $renderer->listu_open();
+                    $renderer->listitem_open(1);
+                    $renderer->internallink($pageId);
 
-                    foreach ($fav as $pageId => $cpt)
-                    {
-                        list($cpt, $date) = explode(';', $cpt);
+                    /*$lien = $this->donneLien($page, " ($cpt " . $this->getLang('fav_visites') . ")");
 
-                        if ($pageId == 'off' || $cpt < 1)
-                        {
-                            continue;
-                        }
-
-                        $ns = getNS($pageId);
-                        resolve_pageid($ns, $pageId, $exists);
-                        if (!$exists)
-                        {
-                            continue;
-                        }
-
-                        if (false === $ns)
-                        {
-                            $pageId = ':' . $pageId;
-                        }
-
-                        $renderer->listitem_open(1);
-                        $renderer->internallink($pageId);
-
-                        /*$lien = $this->donneLien($page, " ($cpt " . $this->getLang('fav_visites') . ")");
-
-                        $renderer->doc .= "<div id=\"$page\">";
-                        $renderer->doc .= $lien;
-                        //Reset
-                        $renderer->doc .= ' <a href="javascript:deleteCookie(\'favorites[' . $page .
-                            ']\', \'/\'); cache(\'' . $page . '\');"><img src="' . DOKU_URL .
-                            'lib/plugins/favorites/images/reset.png" title="' .
-                            $this->getLang('fav_reset') .
-                            '" border="0" height="18" style="vertical-align:middle; ' .
-                            'display:none;" name="ctrl" /></a>';
-                        //Exclure
-                        $renderer->doc .= ' <a  href="javascript:setCookie(\'favorites[' . $page .
-                            ']\', -1, new Date(\'July 21, 2099 00:00:00\'), \'/\'); cache(\'' .
-                            $page . '\');"><img src="' . DOKU_URL .
-                            'lib/plugins/favorites/images/exclure.png" title="' .
-                            $this->getLang('fav_exclure') .
-                            '" border="0" height="18" style="vertical-align:middle; ' .
-                            'display:none;" name="ctrl" /></a>';
-                        $renderer->doc .= "</div>";
-                        $renderer->listitem_close();
-                        */
-                        $idx++;
-                        if ($idx >= $showLimit)
-                        {
-                            break;
-                        }
-                    }
-                    $renderer->listu_close();
-                }/*
+                    $renderer->doc .= "<div id=\"$page\">";
+                    $renderer->doc .= $lien;
+                    //Reset
+                    $renderer->doc .= ' <a href="javascript:deleteCookie(\'favorites[' . $page .
+                        ']\', \'/\'); cache(\'' . $page . '\');"><img src="' . DOKU_URL .
+                        'lib/plugins/favorites/images/reset.png" title="' .
+                        $this->getLang('fav_reset') .
+                        '" border="0" height="18" style="vertical-align:middle; ' .
+                        'display:none;" name="ctrl" /></a>';
+                    //Exclure
+                    $renderer->doc .= ' <a  href="javascript:setCookie(\'favorites[' . $page .
+                        ']\', -1, new Date(\'July 21, 2099 00:00:00\'), \'/\'); cache(\'' .
+                        $page . '\');"><img src="' . DOKU_URL .
+                        'lib/plugins/favorites/images/exclure.png" title="' .
+                        $this->getLang('fav_exclure') .
+                        '" border="0" height="18" style="vertical-align:middle; ' .
+                        'display:none;" name="ctrl" /></a>';
+                    $renderer->doc .= "</div>";
+                    $renderer->listitem_close();
+                    */
+                }
+                $renderer->listu_close();
+                /*
                 if ($idx)
                 {
                     if (!plugin_isdisabled('snap'))
