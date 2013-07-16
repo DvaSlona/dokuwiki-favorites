@@ -96,6 +96,10 @@ class CookieStorage
                 $pageId = ':' . $pageId;
             }
 
+            if (':' . $GLOBALS['conf']['start'] == $pageId)
+            {
+                continue;
+            }
             $favorites []= $pageId;
             if (count($favorites) == $limit)
             {
