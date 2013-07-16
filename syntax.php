@@ -88,28 +88,18 @@ class Syntax_Plugin_favorites extends DokuWiki_Syntax_Plugin
      */
     public function render($mode, $renderer, $data)
     {
-        $maxFav = 10;
-
         if ('xhtml' == $mode)
         {
             /** @var Doku_Renderer_xhtml $renderer */
             $renderer->info['cache'] = false;
 
-            if (isset($_COOKIE['favorites']))
+            $storage = new \DvaSlona\DokuwikiFavorites\Storage\CookieStorage();
+            $showLimit = $storage->getConfigValue('maxFav');
+            $favorites = $storage->getFavorite($showLimit ?: 10);
+
+            if (count($favorites) > 0)
             {
                 $fav = $_COOKIE['favorites'];
-
-                //Combien de pages afficher au maximum ?
-                $max = $maxFav;
-                if (isset($_COOKIE['fav_maxFav']))
-                {
-                    $max = $_COOKIE['fav_maxFav'];
-                }
-                if (intval($max) != $max)
-                {
-                    $max = $maxFav;
-                }
-                $maxFav = $max;
 
                 uasort($fav,
                     function($a, $b)
@@ -128,7 +118,7 @@ class Syntax_Plugin_favorites extends DokuWiki_Syntax_Plugin
                     });
 
                 $idx = 0;
-                if ($maxFav > 0)
+                if ($showLimit > 0)
                 {
                     $renderer->strong_open();
                     $renderer->doc .= $this->getLang('favorites_favorite_pages');
@@ -182,7 +172,7 @@ class Syntax_Plugin_favorites extends DokuWiki_Syntax_Plugin
                         $renderer->listitem_close();
                         */
                         $idx++;
-                        if ($idx >= $maxFav)
+                        if ($idx >= $showLimit)
                         {
                             break;
                         }
